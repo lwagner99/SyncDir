@@ -5,3 +5,4 @@ This process is carried out asynchronously, no permanent internet connection is 
 The architecture is based on a client-server architecture. Any number of clients can be connected to the server. Attention: The simultaneous synchronization of clients with the server is currently not supported.
 The following actions trigger a synchronization: file added, file deleted, file updated.
 
+![Screenshot](server-start.png)
