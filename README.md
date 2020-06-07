@@ -32,6 +32,8 @@ akka {
 
 # enter your sync dir paths here
 de.lukaswagner.client {
+    serverIp = "127.0.0.1"
+    serverPort = "50000"
 #   directory undergoing
     syncDir = "/Users/gordomac/syncedFiles/client"
 #   backups are created here
