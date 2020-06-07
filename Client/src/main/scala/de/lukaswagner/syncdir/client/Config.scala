@@ -10,7 +10,7 @@ object Config {
   val syncDir = new File(config.getString("de.lukaswagner.client.syncDir"))
   val backupDir = new File(config.getString("de.lukaswagner.client.backupDir"))
   val historizedFileChecksumPath = config.getString("de.lukaswagner.client.historizedFileChecksumPath")
-  val serverIp = "127.0.0.1"
-  val serverPort = "50000"
+  val serverIp = config.getString("de.lukaswagner.client.serverIp")
+  val serverPort = config.getString("de.lukaswagner.client.serverPort")
   val akkaUrl = s"$serverIp:$serverPort"
 }
