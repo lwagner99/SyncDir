@@ -1,6 +1,7 @@
 package de.lukaswagner.syncdir.server
 
-import java.nio.file.Paths
+import java.io.File
+import java.nio.file.{Path, Paths}
 
 import akka.actor.{Actor, Props}
 import akka.pattern.pipe
@@ -8,7 +9,7 @@ import akka.stream.scaladsl.{FileIO, StreamRefs}
 import akka.stream.{ActorMaterializer, SourceRef}
 import akka.util.ByteString
 import com.typesafe.scalalogging.LazyLogging
-import de.lukaswagner.syncdir.common.{DownloadFileRequest, DownloadFileStream}
+import de.lukaswagner.syncdir.common.{DownloadFileRequest, DownloadFileStream, Utils}
 
 import scala.concurrent.Future
 
@@ -23,8 +24,8 @@ class SendFileActor extends Actor with LazyLogging {
 
   override def receive: Receive = {
     case DownloadFileRequest(relativeFilePath, transmissionID) =>
-      val file = Paths.get(s"${Config.storedFilesDir}/$relativeFilePath")
-      val ref: Future[SourceRef[ByteString]] = FileIO.fromPath(file).runWith(StreamRefs.sourceRef())
+      val filePath: Path = Utils.createOsIndependentPath(Config.syncDir.toString, relativeFilePath)
+      val ref: Future[SourceRef[ByteString]] = FileIO.fromPath(filePath).runWith(StreamRefs.sourceRef())
       val reply: Future[DownloadFileStream] = ref.map(DownloadFileStream(transmissionID, relativeFilePath, _))
       reply pipeTo sender()
 

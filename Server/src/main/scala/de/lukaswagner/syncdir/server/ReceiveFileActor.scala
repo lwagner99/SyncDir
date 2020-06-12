@@ -1,12 +1,13 @@
 package de.lukaswagner.syncdir.server
 
-import java.nio.file.Paths
+import java.io.File
+import java.nio.file.{Path, Paths}
 
 import akka.actor.{Actor, Props}
 import akka.stream.scaladsl.{FileIO, Source}
 import akka.stream.{ActorMaterializer, IOResult}
 import com.typesafe.scalalogging.LazyLogging
-import de.lukaswagner.syncdir.common.{TransmissionsAcknowledgement, UploadFileStream}
+import de.lukaswagner.syncdir.common.{TransmissionsAcknowledgement, UploadFileStream, Utils}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
@@ -21,19 +22,20 @@ class ReceiveFileActor extends Actor with LazyLogging {
   implicit val mat: ActorMaterializer = ActorMaterializer()(context)
 
   override def receive: Receive = {
-    case UploadFileStream(transmissionID, filePath, sourceRef, clientCoordinatorActor) =>
-      val file = Paths.get(s"${Config.storedFilesDir}/$filePath")
-      if (!file.toFile.exists()) {
-        file.getParent.toFile.mkdirs()
-        file.toFile.createNewFile()
+    case UploadFileStream(transmissionID, relativeFilePath, sourceRef, clientCoordinatorActor) =>
+      val filePath: Path = Utils.createOsIndependentPath(Config.syncDir.toString, relativeFilePath)
+
+      if (!filePath.toFile.exists()) {
+        filePath.getParent.toFile.mkdirs()
+        filePath.toFile.createNewFile()
       }
 
-      val result: Future[IOResult] = Source.fromGraph(sourceRef).runWith(FileIO.toPath(file))
+      val result: Future[IOResult] = Source.fromGraph(sourceRef).runWith(FileIO.toPath(filePath))
       result.onComplete {
         case Success(_) =>
           clientCoordinatorActor ! TransmissionsAcknowledgement(transmissionID)
         case Failure(exception) =>
-          logger.error(s"ERROR while receiving file $filePath")
+          logger.error(s"ERROR when receiving file $relativeFilePath")
           logger.error(exception.toString)
       }
 

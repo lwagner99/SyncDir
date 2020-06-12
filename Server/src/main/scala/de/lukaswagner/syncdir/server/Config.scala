@@ -6,5 +6,5 @@ import com.typesafe.config.{Config, ConfigFactory}
 
 object Config {
   val config: Config = ConfigFactory.load("application.conf")
-  val storedFilesDir = new File(config.getString("de.lukaswagner.server.syncDir"))
+  val syncDir = new File(config.getString("de.lukaswagner.server.syncDir"))
 }

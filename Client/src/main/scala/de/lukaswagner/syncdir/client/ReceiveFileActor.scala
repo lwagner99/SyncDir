@@ -1,13 +1,13 @@
 package de.lukaswagner.syncdir.client
 
-import java.nio.file.Paths
+import java.nio.file.{Path, Paths}
 
 import akka.actor.{Actor, _}
 import akka.stream.scaladsl.{FileIO, Source}
 import akka.stream.{ActorMaterializer, IOResult, SourceRef}
 import akka.util.ByteString
 import com.typesafe.scalalogging.LazyLogging
-import de.lukaswagner.syncdir.common.{DownloadFileStream, TransmissionsAcknowledgement}
+import de.lukaswagner.syncdir.common.{DownloadFileStream, TransmissionsAcknowledgement, Utils}
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
@@ -22,7 +22,7 @@ class ReceiveFileActor extends Actor with LazyLogging {
 
   override def receive: Receive = {
     case DownloadFileStream(transmissionID: String, relativeFilePath: String, ref: SourceRef[ByteString]) =>
-      val filePath = Paths.get(s"${Config.syncDir}/$relativeFilePath")
+      val filePath: Path = Utils.createOsIndependentPath(Config.syncDir.toString, relativeFilePath)
       if (!filePath.toFile.exists()) {
         filePath.getParent.toFile.mkdirs()
         filePath.toFile.createNewFile()

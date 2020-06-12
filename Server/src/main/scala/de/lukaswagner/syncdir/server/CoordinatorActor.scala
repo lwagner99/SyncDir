@@ -36,12 +36,12 @@ class CoordinatorActor extends Actor with LazyLogging {
   }
 
   def deleteFileOnServer(filePath: String): Boolean = {
-    new File(s"${Config.storedFilesDir}/$filePath").delete()
+    new File(s"${Config.syncDir}/$filePath").delete()
   }
 
   private def getFilesMeta: List[FileChecksum] = {
     object dirIdentifier extends DirChecksumCalculating
-    dirIdentifier.calculateDirChecksum(Config.storedFilesDir, Config.storedFilesDir.getPath)
+    dirIdentifier.calculateDirChecksum(Config.syncDir, Config.syncDir.getPath)
   }
 }
 
