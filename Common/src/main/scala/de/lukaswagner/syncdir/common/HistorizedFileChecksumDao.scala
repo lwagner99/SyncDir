@@ -101,10 +101,9 @@ object HistorizedFileChecksumDao {
     }
 
     private def transformCSVStringToFileMeta(string: String): FileChecksum = {
-      val replacedString = string.replace(" ", "")
-      val firstIndex = replacedString indexOf "("
-      val lastIndex = replacedString.lastIndexOf(")")
-      val subString = replacedString.substring(firstIndex + 1, lastIndex)
+      val firstIndex = string indexOf "("
+      val lastIndex = string.lastIndexOf(")")
+      val subString = string.substring(firstIndex + 1, lastIndex)
       val splitted = subString split ","
       val fileMeta = FileChecksum(splitted(0), splitted(1).toLong)
       fileMeta

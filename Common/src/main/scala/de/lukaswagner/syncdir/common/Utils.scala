@@ -5,14 +5,16 @@ import java.nio.file.{Path, Paths}
 
 object Utils {
   def createOsIndependentPath(prefixPath: String, relativeFilePath: String): Path = {
-    val filePath = s"${prefixPath}${File.separator}${relativeFilePath.replaceAll("""([\\/])""", File.separator)}"
-    val file = Paths.get(filePath)
+    var path = relativeFilePath.replace("\\", File.separator)
+    path = path.replace("/", File.separator)
+    val file = Paths.get(s"$prefixPath${File.separator}$path")
     file
   }
 
   def createOsIndependentStringPath(relativeFilePath: String): String = {
-    val filePath = s"${relativeFilePath.replaceAll("""([\\/])""", File.separator)}"
-    filePath
+    var path = relativeFilePath.replace("\\", File.separator)
+    path = path.replace("/", File.separator)
+    path
   }
 
 }

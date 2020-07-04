@@ -21,7 +21,9 @@ class CoordinatorActor extends Actor
 
   override def receive: Receive = {
     case SyncDirResponse(serverFilesMeta) =>
-      syncSharedDir(serverFilesMeta)
+      // used for parsing the incoming request
+      val tmp = SyncDirResponse(serverFilesMeta)
+      syncSharedDir(tmp.filesMeta)
 
     case TransmissionsAcknowledgement(transmissionID) =>
       ackMap.update(transmissionID, true)
