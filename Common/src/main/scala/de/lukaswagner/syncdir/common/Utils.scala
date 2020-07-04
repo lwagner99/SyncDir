@@ -10,4 +10,9 @@ object Utils {
     file
   }
 
+  def createOsIndependentStringPath(relativeFilePath: String): String = {
+    val filePath = s"${relativeFilePath.replaceAll("""([\\/])""", File.separator)}"
+    filePath
+  }
+
 }
