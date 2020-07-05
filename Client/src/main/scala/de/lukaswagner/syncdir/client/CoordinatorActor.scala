@@ -19,11 +19,11 @@ class CoordinatorActor extends Actor
   val clientSendFileActor: ActorRef = context.actorOf(SendFileActor.props, "SendFileActor")
   val ackMap: mutable.Map[String, Boolean] = scala.collection.mutable.Map[String, Boolean]()
 
+
   override def receive: Receive = {
     case SyncDirResponse(serverFilesMeta) =>
-      // used for parsing the incoming request
-      val tmp = SyncDirResponse(serverFilesMeta)
-      syncSharedDir(tmp.filesMeta)
+      val parsedSyncDirResponse = parseToLocalOsSystem(serverFilesMeta)
+      syncSharedDir(parsedSyncDirResponse.filesMeta)
 
     case TransmissionsAcknowledgement(transmissionID) =>
       ackMap.update(transmissionID, true)
@@ -61,6 +61,10 @@ class CoordinatorActor extends Actor
       logger.info("all ACKS received")
       System.exit(0)
     }
+  }
+
+  def parseToLocalOsSystem(serverFilesMeta: List[FileChecksum]): SyncDirResponse = {
+    SyncDirResponse(serverFilesMeta)
   }
 }
 
